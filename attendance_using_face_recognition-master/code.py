@@ -1,14 +1,11 @@
 # THIS IS THE FINAL CODE FOR VIDEO
-
 from cv2 import cv2
 import face_recognition
 import os
 import math
 import numpy
 from datetime import datetime
-
 videoCapture = cv2.VideoCapture(0)
-
 # FOR MARKING ATTENDANCE
 def markAttendance(regNumber, name):
     f = open("Attendance.csv", "r+")
@@ -21,7 +18,6 @@ def markAttendance(regNumber, name):
         time = datetime.now()
         timeFormat = time.strftime('%H:%M:%S')
         f.writelines(f'\n{regNumber},{name},{timeFormat}')
-
 # FOR CHECKING THE ACCURACY
 def getAccuracy(faceDistance, faceMatchThreshold = 0.6):
     if faceDistance > faceMatchThreshold:
@@ -32,7 +28,6 @@ def getAccuracy(faceDistance, faceMatchThreshold = 0.6):
         range = faceMatchThreshold
         linearValue = 1.0 - (faceDistance / (range * 2.0))
         return linearValue + ((1.0 - linearValue) * math.pow((linearValue - 0.5) * 2, 0.2))
-
 # FOR GETTING PATH, NAME, REGISTRATION NO. AND ENCODINGS OF EACH PERSON
 allPaths = os.listdir("imageData")
 allNames = []
@@ -44,28 +39,18 @@ for index in range(len(allPaths)):
     image = face_recognition.load_image_file("imageData/" + allPaths[index])
     temp = face_recognition.face_encodings(image)[0]
     allEncodings.append(temp)
-
 while True:
     ret, frame = videoCapture.read()
-
     frame = cv2.resize(frame, (0, 0), fx=2, fy=1.6)
-
     resizedFrame = cv2.resize(frame, (0, 0), fx=0.2, fy=0.2)
-
     requiredFrame = cv2.cvtColor(resizedFrame, cv2.COLOR_BGR2RGB)
-
     faceLocation = face_recognition.face_locations(requiredFrame)
-
     faceEncoding = face_recognition.face_encodings(requiredFrame, faceLocation)
-
     faceNames = []
     for encoding in faceEncoding:
-
         ismatched = face_recognition.compare_faces(allEncodings, encoding)
         matchedName = "Unknown"
-
         faceDistance = face_recognition.face_distance(allEncodings, encoding)
-
         if faceDistance[0] > faceDistance[1]: minimumFaceDistance = faceDistance[1]
         else: minimumFaceDistance = faceDistance[0]
 
